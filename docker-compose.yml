@@ -4,8 +4,7 @@ services:
   app:
     build:
       context: ./
-    command: npm run dev
     env_file: .env
     restart: always
     ports:
-      - "3000:3000"
+      - "80:3000"
