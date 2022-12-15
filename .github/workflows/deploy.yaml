@@ -39,5 +39,9 @@ jobs:
           curl --retry 10 --retry-delay 10 --retry-connrefused ${{ secrets.STAGING_URL }}/api/server/info  || exit 1
       - name: Promote to production
         if: ${{ github.ref_name == 'main' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         run: |
           aws elasticbeanstalk swap-environment-cnames --source-environment-name ${{ steps.target-env.outputs.OLD_ENV }} --destination-environment-name ${{ steps.target-env.outputs.NEW_ENV }} --region ${{ secrets.AWS_DEFAULT_REGION }}
