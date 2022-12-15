@@ -14,9 +14,12 @@ jobs:
       - name: Get target EB environment name
         id: target-env
         run: |
-          prod_env=$(curl ${{ secrets.PROD_URL }}/api/server/info | jq '.EB_ENVIRONMENT' | sed 's/"//g')
-          target_env=$([ $prod_env == ${{ secrets.BLUE_ENV }} ] && echo ${{ secrets.GREEN_ENV }} || echo ${{ secrets.BLUE_ENV }})
-          echo "TARGET_ENV=$target_env" >> $GITHUB_OUTPUT
+          old_env=$(curl ${{ secrets.PROD_URL }}/api/server/info | jq '.EB_ENVIRONMENT' | sed 's/"//g')
+          new_env=$([ $old_env == ${{ secrets.BLUE_ENV }} ] && echo ${{ secrets.GREEN_ENV }} || echo ${{ secrets.BLUE_ENV }})
+
+          echo NEW_ENV=$new_env >> $GITHUB_OUTPUT
+          echo OLD_ENV=$old_env >> .env
+          echo BRANCH=${{ github.ref_name }} >> .env
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
       - name: Deploy to EB
@@ -25,7 +28,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ secrets.APPLICATION_NAME }}
-          environment_name: ${{ steps.target-env.outputs.TARGET_ENV }}
+          environment_name: ${{ steps.target-env.outputs.NEW_ENV }}
           version_label: ${{ github.ref_name }}-${{ github.sha }}
           version_description: ${{ github.event.head_commit.message }}
           region: ${{ secrets.AWS_DEFAULT_REGION }}
