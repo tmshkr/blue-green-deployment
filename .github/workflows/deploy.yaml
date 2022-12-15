@@ -1,0 +1,33 @@
+name: Blue/Green Deployment
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get target EB environment name
+        id: target-env
+        run: |
+          prod_env=$(curl ${{ secrets.PROD_URL}}/api/server/info | jq '.EB_ENVIRONMENT' | sed 's/"//g')
+          target_env=$([ $prod_env == ${{ secrets.BLUE_ENV }} ] && echo ${{ secrets.GREEN_ENV}} || echo ${{ secrets.BLUE_ENV}})
+          echo "::set-output name=ENV_NAME::$target_env"
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ secrets.APPLICATION_NAME }}
+          environment_name: ${{ steps.target-env.outputs.ENV_NAME }}
+          version_label: ${{ github.ref_name }}-${{ github.sha }}
+          version_description: ${{ github.event.head_commit.message }}
+          region: ${{ secrets.AWS_DEFAULT_REGION }}
+          deployment_package: deploy.zip
+          wait_for_environment_recovery: 60
