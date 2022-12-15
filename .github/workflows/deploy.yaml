@@ -42,4 +42,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         run: |
-          aws elasticbeanstalk swap-environment-cnames --source-environment-name ${{ secrets.BLUE_ENV } --destination-environment-name ${{ secrets.GREEN_ENV }}
+          aws elasticbeanstalk swap-environment-cnames --source-environment-name ${{ secrets.BLUE_ENV }} --destination-environment-name ${{ secrets.GREEN_ENV }}
