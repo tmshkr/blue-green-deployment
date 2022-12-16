@@ -12,5 +12,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
   res.status(202).send("Accepted");
 
-  exec("./promote.sh");
+  exec("./promote.sh", (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+  });
 }
