@@ -9,6 +9,3 @@ aws s3 cp s3://$CONFIG_S3_BUCKET/staging.env .env
 printf "\n" >> .env
 printf "EB_ENVIRONMENT=$EB_ENVIRONMENT" >> .env
 printf "\n" >> .env
-
-# run migrations
-npm run migrate
