@@ -6,7 +6,7 @@ on:
       - staging
 
 jobs:
-  deploy:
+  deploy-staging:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -36,10 +36,10 @@ jobs:
           curl --retry 10 --retry-delay 10 --retry-connrefused ${{ secrets.STAGING_URL }}/api/server/info  || exit 1
     outputs:
       target: ${{ steps.target-env.outputs.TARGET_ENV }}
-  promote:
+  deploy-production:
     runs-on: ubuntu-latest
-    needs: deploy
-    # if: ${{ github.ref_name == 'main' }}
+    needs: deploy-staging
+    if: ${{ github.ref_name == 'main' }}
     steps:
       - uses: actions/checkout@v3
       - name: Generate production deployment package
@@ -50,7 +50,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ secrets.APPLICATION_NAME }}
-          environment_name: ${{ needs.deploy.outputs.target }}
+          environment_name: ${{ needs.deploy-staging.outputs.target }}
           version_label: production-${{ github.sha }}
           version_description: ${{ github.event.head_commit.message }}
           region: ${{ secrets.AWS_DEFAULT_REGION }}
