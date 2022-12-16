@@ -42,6 +42,10 @@ jobs:
     if: ${{ github.ref_name == 'main' }}
     steps:
       - uses: actions/checkout@v3
+      - name: Get target EB environment name
+        id: target-env
+        run: |
+          echo TARGET_ENV=${{ needs.deploy.outputs.TARGET_ENV }} >> $GITHUB_OUTPUT
       - name: Generate production deployment package
         run: echo "production" > ENVIRONMENT && zip -r deploy.zip . -x '*.git*'
       - name: Deploy to EB
@@ -50,7 +54,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ secrets.APPLICATION_NAME }}
-          environment_name: ${{ needs.deploy.outputs.TARGET_ENV }}
+          environment_name: ${{ steps.target-env.outputs.TARGET_ENV }}
           version_label: production-${{ github.sha }}
           version_description: ${{ github.event.head_commit.message }}
           region: ${{ secrets.AWS_DEFAULT_REGION }}
