@@ -34,14 +34,18 @@ jobs:
       - name: Wait for server
         run: |
           curl --retry 10 --retry-delay 10 --retry-connrefused ${{ secrets.STAGING_URL }}/api/server/info  || exit 1
-    outputs:
-      target: ${{ steps.target-env.outputs.TARGET_ENV }}
   deploy-production:
     runs-on: ubuntu-latest
     needs: deploy-staging
     if: ${{ github.ref_name == 'main' }}
     steps:
       - uses: actions/checkout@v3
+      - name: Get target EB environment name
+        id: target-env
+        run: |
+          old_env=$(curl ${{ secrets.PROD_URL }}/api/server/info | jq '.EB_ENVIRONMENT' | sed 's/"//g')
+          new_env=$([ $old_env == ${{ secrets.BLUE_ENV }} ] && echo ${{ secrets.GREEN_ENV }} || echo ${{ secrets.BLUE_ENV }})
+          echo TARGET_ENV=$new_env >> $GITHUB_OUTPUT
       - name: Generate production deployment package
         run: echo "production" > ENVIRONMENT && zip -r deploy.zip . -x '*.git*'
       - name: Deploy to EB
@@ -50,7 +54,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ secrets.APPLICATION_NAME }}
-          environment_name: ${{ needs.deploy-staging.outputs.target }}
+          environment_name: ${{ steps.target-env.outputs.TARGET_ENV }}
           version_label: production-${{ github.sha }}
           version_description: ${{ github.event.head_commit.message }}
           region: ${{ secrets.AWS_DEFAULT_REGION }}
