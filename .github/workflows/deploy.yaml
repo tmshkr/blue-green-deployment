@@ -64,4 +64,5 @@ jobs:
           wait_for_environment_recovery: 60
           use_existing_version_if_available: true
       - name: Swap CNAMEs
-        run: node swap-cnames.js
+        run: |
+          aws elasticbeanstalk swap-environment-cnames --source-environment-name ${{ secrets.BLUE_ENV }} --destination-environment-name ${{ secrets.GREEN_ENV }}
