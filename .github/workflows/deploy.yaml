@@ -27,10 +27,13 @@ jobs:
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v21
         with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ secrets.APP_NAME }}
           environment_name: ${{ steps.target-env.outputs.TARGET_ENV }}
           version_label: staging-${{ github.sha }}
           version_description: ${{ github.event.head_commit.message }}
+          region: ${{ secrets.AWS_DEFAULT_REGION }}
           deployment_package: deploy.zip
           wait_for_environment_recovery: 60
           use_existing_version_if_available: true
@@ -50,10 +53,13 @@ jobs:
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v21
         with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ secrets.APP_NAME }}
           environment_name: ${{ steps.target-env.outputs.TARGET_ENV }}
-          version_label: production-${{ github.sha }}
+          version_label: staging-${{ github.sha }}
           version_description: ${{ github.event.head_commit.message }}
+          region: ${{ secrets.AWS_DEFAULT_REGION }}
           deployment_package: deploy.zip
           wait_for_environment_recovery: 60
           use_existing_version_if_available: true
