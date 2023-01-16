@@ -5,14 +5,15 @@ on:
       - main
       - staging
 env:
-  APP_NAME: ${{ secrets.APP_NAME }}
+  APP_NAME: ${{ vars.APP_NAME }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-  BLUE_ENV: ${{ secrets.BLUE_ENV }}
-  GREEN_ENV: ${{ secrets.GREEN_ENV }}
-  PRODUCTION_CNAME: ${{ secrets.PRODUCTION_CNAME }}
-  STAGING_CNAME: ${{ secrets.STAGING_CNAME }}
+  AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+  BLUE_ENV: ${{ vars.BLUE_ENV }}
+  GREEN_ENV: ${{ vars.GREEN_ENV }}
+  PRODUCTION_CNAME: ${{ vars.PRODUCTION_CNAME }}
+  STAGING_CNAME: ${{ vars.STAGING_CNAME }}
+  TEMPLATE_NAME: ${{ vars.TEMPLATE_NAME }}
 
 jobs:
   deploy-staging:
