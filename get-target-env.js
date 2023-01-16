@@ -1,7 +1,13 @@
 const { execSync } = require("child_process");
 
-const { APP_NAME, BLUE_ENV, GREEN_ENV, PRODUCTION_CNAME, STAGING_CNAME } =
-  process.env;
+const {
+  APP_NAME,
+  BLUE_ENV,
+  GREEN_ENV,
+  PRODUCTION_CNAME,
+  STAGING_CNAME,
+  TEMPLATE_NAME,
+} = process.env;
 
 function getTargetEnv() {
   const stdout = execSync(
@@ -43,7 +49,7 @@ function getTargetEnv() {
 function createEnvironment(envName) {
   console.log("Creating new environment... ");
   const stdout = execSync(
-    `aws elasticbeanstalk create-environment --application-name ${APP_NAME} --environment-name ${envName} --cname-prefix ${STAGING_CNAME} --template-name my-template`
+    `aws elasticbeanstalk create-environment --application-name ${APP_NAME} --environment-name ${envName} --cname-prefix ${STAGING_CNAME} --template-name ${TEMPLATE_NAME}`
   );
 
   const newEnv = JSON.parse(stdout);
