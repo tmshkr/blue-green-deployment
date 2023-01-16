@@ -43,7 +43,7 @@ function getTargetEnv() {
 function createEnvironment(envName) {
   console.log("Creating new environment... ");
   const stdout = execSync(
-    `aws elasticbeanstalk create-environment --application-name ${APP_NAME} --environment-name ${envName} --cname-prefix ${STAGING_CNAME}`
+    `aws elasticbeanstalk create-environment --application-name ${APP_NAME} --environment-name ${envName} --cname-prefix ${STAGING_CNAME} --solution-stack-name "Docker running on 64bit Amazon Linux 2"`
   );
 
   const newEnv = JSON.parse(stdout);
