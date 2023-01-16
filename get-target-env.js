@@ -26,8 +26,7 @@ function getTargetEnv() {
       ({ CNAME, Status }) =>
         CNAME.startsWith(PRODUCTION_CNAME) && Status !== "Terminated"
     );
-    const newEnv =
-      prodEnv?.EnvironmentName === GREEN_ENV ? BLUE_ENV : GREEN_ENV;
+    const newEnv = prodEnv.EnvironmentName === GREEN_ENV ? BLUE_ENV : GREEN_ENV;
     createEnvironment(newEnv);
     return getTargetEnv();
   }
