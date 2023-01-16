@@ -66,4 +66,4 @@ jobs:
           use_existing_version_if_available: true
       - name: Swap CNAMEs
         run: |
-          aws elasticbeanstalk swap-environment-cnames --source-environment-name ${{ secrets.BLUE_ENV }} --destination-environment-name ${{ secrets.GREEN_ENV }}
+          aws elasticbeanstalk swap-environment-cnames --source-environment-name ${{ vars.BLUE_ENV }} --destination-environment-name ${{ vars.GREEN_ENV }}
