@@ -43,7 +43,15 @@ function getTargetEnv() {
 function createEnvironment(envName) {
   console.log("Creating new environment... ");
   const stdout = execSync(
-    `aws elasticbeanstalk create-environment --application-name ${APP_NAME} --environment-name ${envName} --cname-prefix ${STAGING_CNAME} --solution-stack-name "64bit Amazon Linux 2 v3.5.3 running Docker"`
+    `aws elasticbeanstalk create-environment --application-name ${APP_NAME} --environment-name ${envName} --cname-prefix ${STAGING_CNAME} --solution-stack-name "64bit Amazon Linux 2 v3.5.3 running Docker" --option-settings ${JSON.stringify(
+      [
+        {
+          Namespace: "aws:autoscaling:launchconfiguration",
+          OptionName: "IamInstanceProfile",
+          Value: "aws-elasticbeanstalk-ec2-role",
+        },
+      ]
+    )}`
   );
 
   const newEnv = JSON.parse(stdout);
@@ -66,6 +74,7 @@ function terminateEnvironment(environmentId) {
 }
 
 async function main() {
+  console.log(process.env);
   let tries = 0;
   while (tries < 6) {
     try {
